@@ -2,31 +2,56 @@
 # -*- coding: utf-8 -*-
 
 from typing import List
+from utils import FindMinValueInArray
 
 
-def FindTargetInMatrix2(numbers: List[List[int]], target: int) -> bool:
+def minNumberInRotateArray(numbers: List[int]) -> int:
     """
-    二维数组的查找(LeetCode 240): 从上到下、从左到右递增, 查找target
-    解法:右上或者左下开始
+    旋转数组的最小数字
+    解法:二分法
     """
     if numbers is None or len(numbers) <= 0:
-        return False
-
-    rows = len(numbers)
-    cols = len(numbers[0])
-
-    i = 0
-    j = cols - 1
-
-    while i < rows and j >= 0:
-        if numbers[i][j] == target:
-            return True
-        elif numbers[i][j] > target:
-            j -= 1
-        else:
-            i += 1
+        return -1
     
-    return False
+    low = 0
+    high = len(numbers) - 1
+
+    if numbers[low] < numbers[high]:
+        return numbers[low]
+
+    while low < high:
+        mid = low + (high - low) // 2
+        if numbers[mid] == numbers[low] and numbers[low] == numbers[high]:
+            return  FindMinValueInArray(numbers)
+        
+        if numbers[mid] <= numbers[high]:
+            high = mid
+        elif numbers[mid] >= numbers[low]:
+            low = mid
+        
+        if high - low == 1:
+            return numbers[high]
+    
+    return -1
+
+
+def FindGreatestSumOfSubArray(numbers: List[int]) -> int:
+    """
+    连续子数组的最大和
+    解法: 动态规划 result = max(numbers[i], result[i-1]+numbers[i])
+    """
+    if numbers is None or len(numbers) <= 0:
+        return -1
+    
+    # 以第i个元素结尾的数组的子数组的最大和
+    endAsI = numbers[0]
+    result = endAsI
+    for i in range(1, len(numbers)):
+        endAsI = max(result + numbers[i], numbers[i])
+        if endAsI > result:
+            endAsI = result
+    
+    return result
 
 
 def MoreThanHalfNum_Solution(numbers: List[int]):
@@ -99,7 +124,7 @@ def FindNumsAppearOnce(numbers: List[int]):
 
 
 def main():
-    print(FindTargetInMatrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 5))
+    print(minNumberInRotateArray([1, 2, 3, 4, 5]))
     print(MoreThanHalfNum_Solution([1, 2, 3, 2, 2, 2, 5, 4, 2]))
     print(FindNumsAppearOnce([2,4,3,6,3,2,5,5]))
 
